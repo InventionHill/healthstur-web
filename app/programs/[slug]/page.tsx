@@ -17,6 +17,7 @@ interface Solution {
     approach: string;
     benefits: string;
     image: string;
+    isActive?: boolean;
 }
 
 interface ProgramData {
@@ -29,6 +30,7 @@ interface ProgramData {
     solutionsHeading?: string;
     solutionsSubtext?: string;
     solutions?: Solution[];
+    isActive?: boolean;
 }
 
 export default function GenericProgramPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -82,7 +84,7 @@ export default function GenericProgramPage({ params }: { params: Promise<{ slug:
         );
     }
 
-    if (!program) {
+    if (!program || program.isActive === false) {
         return (
             <main className="min-h-screen font-sans bg-white">
                 <Header />
@@ -106,7 +108,7 @@ export default function GenericProgramPage({ params }: { params: Promise<{ slug:
             <DynamicSolutions
                 heading={program.solutionsHeading || `Complete ${program.name} Solutions`}
                 subtext={program.solutionsSubtext || `Simple, safe, and sustainable plans tailored for ${program.name.toLowerCase()} goals.`}
-                solutions={program.solutions || []}
+                solutions={(program.solutions || []).filter((s: any) => s.isActive !== false)}
             />
             <SmoothReveal delay={0.1}>
                 <PricingSection />

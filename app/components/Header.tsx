@@ -8,6 +8,7 @@ import { Menu, X, Search, User, Languages, ChevronRight, ChevronDown, BookOpen }
 
 import ConsultationDialog from './ConsultationDialog';
 import * as LucideIcons from 'lucide-react';
+import { DynamicIcon } from './DynamicIcon';
 
 interface SubItem {
     name: string;
@@ -21,6 +22,8 @@ interface ProgramData {
     href: string;
     subItems?: (SubItem | any)[];
     solutions?: { title: string }[];
+    isActive?: boolean;
+    iconColor?: string;
 }
 
 const Header = () => {
@@ -31,9 +34,10 @@ const Header = () => {
             try {
                 const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'}/programs`);
                 if (res.ok) {
-                    const data = await res.json();
+                    const data: ProgramData[] = await res.json();
                     if (data && data.length > 0) {
-                        setProgramsData(data);
+                        const activePrograms = data.filter(p => p.isActive !== false);
+                        setProgramsData(activePrograms);
                     }
                 }
             } catch (error) {
@@ -117,21 +121,19 @@ const Header = () => {
                                                         <Link
                                                             href={item.href}
                                                             className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors relative overflow-hidden"
+                                                            style={{ '--hover-color': item.iconColor || '#023051' } as React.CSSProperties}
                                                         >
                                                             {/* Hover sidebar accent */}
-                                                            <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-[#023051] opacity-0 group-hover/item:opacity-100 transition-opacity" />
+                                                            <div className="absolute left-0 top-0 bottom-0 w-[3px] opacity-0 group-hover/item:opacity-100 transition-opacity bg-[var(--hover-color)]" />
 
-                                                            <div className="w-6 h-6 flex items-center justify-center text-black group-hover/item:text-[#023051] transition-colors duration-300">
-                                                                {(() => {
-                                                                    const Icon = (LucideIcons as any)[item.icon] || LucideIcons.Activity;
-                                                                    return <Icon className="w-full h-full" />;
-                                                                })()}
+                                                            <div className="w-6 h-6 flex items-center justify-center text-[color:var(--hover-color)] transition-colors duration-300">
+                                                                <DynamicIcon name={item.icon || 'Activity'} className="w-full h-full" />
                                                             </div>
 
-                                                            <span className="text-[14px] font-medium text-black group-hover/item:text-[#023051] transition-colors flex-1">
+                                                            <span className="text-[14px] font-medium text-black group-hover/item:text-[color:var(--hover-color)] transition-colors flex-1">
                                                                 {item.name}
                                                             </span>
-                                                            <ChevronRight className="w-4 h-4 text-black opacity-0 -translate-x-2 group-hover/item:opacity-100 group-hover/item:translate-x-0 group-hover/item:text-[#023051] transition-all duration-300" />
+                                                            <ChevronRight className="w-4 h-4 text-black opacity-0 -translate-x-2 group-hover/item:opacity-100 group-hover/item:translate-x-0 group-hover/item:text-[color:var(--hover-color)] transition-all duration-300" />
                                                         </Link>
 
                                                         {/* Nested Submenu */}
@@ -139,8 +141,8 @@ const Header = () => {
                                                             <div className="absolute top-0 left-full hidden group-hover/item:block w-[260px] z-50">
                                                                 <div className="bg-white shadow-[2px_2px_6px_-2px_rgba(0,0,0,0.15)]">
                                                                     <div className="flex flex-col gap-1">
-                                                                        {item.solutions.map((sol, index) => {
-                                                                            if (!sol || typeof sol !== 'object' || Array.isArray(sol) || !sol.title) { return null; }
+                                                                        {item.solutions.map((sol: any, index) => {
+                                                                            if (!sol || typeof sol !== 'object' || Array.isArray(sol) || !sol.title || sol.isActive === false) { return null; }
                                                                             const name = sol.title || 'Unnamed';
                                                                             const slugId = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
                                                                             const href = `${item.href}#${slugId}`;
@@ -251,19 +253,17 @@ const Header = () => {
                                                     <div key={category.id || `${category.name}-mobile-${index}`} className="border-b border-gray-100 last:border-0 relative">
                                                         <button
                                                             onClick={() => toggleProgramCategory(category.name)}
-                                                            className="w-full flex items-center justify-between px-4 py-3 text-sm font-semibold text-gray-700 hover:text-[#023051]"
+                                                            className="w-full flex items-center justify-between px-4 py-3 text-sm font-semibold text-gray-700 hover:text-[color:var(--hover-color)] transition-colors group/mobileitem"
+                                                            style={{ '--hover-color': category.iconColor || '#023051' } as React.CSSProperties}
                                                         >
                                                             <div className="flex items-center gap-3">
-                                                                <div className="w-5 h-5 flex items-center justify-center text-gray-600">
-                                                                    {(() => {
-                                                                        const Icon = (LucideIcons as any)[category.icon] || LucideIcons.Activity;
-                                                                        return <Icon className="w-full h-full" />;
-                                                                    })()}
+                                                                <div className="w-5 h-5 flex items-center justify-center text-[color:var(--hover-color)] transition-colors">
+                                                                    <DynamicIcon name={category.icon || 'Activity'} className="w-full h-full" />
                                                                 </div>
                                                                 {category.name}
                                                             </div>
                                                             {category.solutions && category.solutions.length > 0 && (
-                                                                <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expandedProgramCategory === category.name ? 'rotate-180' : ''}`} />
+                                                                <ChevronDown className={`w-4 h-4 text-gray-400 group-hover/mobileitem:text-[color:var(--hover-color)] transition-all duration-300 ${expandedProgramCategory === category.name ? 'rotate-180' : ''}`} />
                                                             )}
                                                         </button>
 
@@ -271,8 +271,8 @@ const Header = () => {
                                                         {category.solutions && category.solutions.length > 0 && (
                                                             <div className={`overflow-hidden transition-all duration-300 ${expandedProgramCategory === category.name ? 'max-h-[500px]' : 'max-h-0'}`}>
                                                                 <div className="bg-white pl-8 pr-4 py-2 space-y-1 border-t border-gray-100">
-                                                                    {category.solutions.map((sol, index) => {
-                                                                        if (!sol || typeof sol !== 'object' || Array.isArray(sol) || !sol.title) { return null; }
+                                                                    {category.solutions.map((sol: any, index) => {
+                                                                        if (!sol || typeof sol !== 'object' || Array.isArray(sol) || !sol.title || sol.isActive === false) { return null; }
                                                                         const name = sol.title || 'Unnamed';
                                                                         const slugId = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
                                                                         const href = `${category.href}#${slugId}`;

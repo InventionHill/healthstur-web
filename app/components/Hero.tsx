@@ -15,6 +15,7 @@ interface Program {
     homeSubtext?: string;
     homeBackground?: string;
     bullets: string[];
+    isActive?: boolean;
 }
 
 export default function Hero() {
@@ -27,9 +28,10 @@ export default function Hero() {
             try {
                 const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'}/programs`);
                 if (res.ok) {
-                    const data = await res.json();
+                    const data: Program[] = await res.json();
                     if (data && data.length > 0) {
-                        setSlides(data);
+                        const activePrograms = data.filter(p => p.isActive !== false);
+                        setSlides(activePrograms);
                     }
                 }
             } catch (error) {
