@@ -44,11 +44,39 @@ export default function StartApplicationDialog({ isOpen, onClose, selectedProgra
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log('Application submitted:', { ...formData, selectedProgram });
-        onClose();
-        // Reset form?
+        setIsSubmitting(true);
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'}/applications`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...formData, selectedProgram })
+            });
+            if (!response.ok) throw new Error('Failed to submit application');
+
+            console.log('Application submitted successfully');
+            onClose();
+            setFormData({
+                fullName: '',
+                mobileNumber: '',
+                email: '',
+                height: '',
+                weight: '',
+                age: '',
+                medicalCondition: '',
+                allergies: '',
+                goal: '',
+                duration: '',
+                routine: ''
+            });
+        } catch (error) {
+            console.error('Error submitting application:', error);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
