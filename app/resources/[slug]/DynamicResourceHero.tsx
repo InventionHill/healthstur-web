@@ -3,30 +3,28 @@
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 
-interface HeroProps {
-    heading: string;
-    subtext: string;
-    background?: string;
-    programName?: string;
+interface DynamicResourceHeroProps {
+    title: string;
+    description: string;
+    image?: string;
+    resourceTitle: string;
 }
 
-export default function DynamicHero({ heading, subtext, background, programName }: HeroProps) {
-    const backendUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api').replace(/\/api$/, '');
-    const backgroundUrl = background?.startsWith('/uploads/')
-        ? `${backendUrl}${background}`
-        : background || '/Program_bg.png';
-
-    console.log(backgroundUrl);
+export default function DynamicResourceHero({ title, description, image, resourceTitle }: DynamicResourceHeroProps) {
+    const defaultImage = "/Wellness.jpg";
+    const bgImage = image
+        ? (image.startsWith('http') ? image : `${(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api').replace(/\/api$/, '')}${image}`)
+        : defaultImage;
 
     return (
-        <section className="relative w-full h-[70vh] min-h-full flex items-center justify-center overflow-hidden">
+        <section className="relative w-full min-w-full h-[70vh] min-h-full flex items-center justify-center overflow-hidden">
             {/* Background Image */}
             <div className="absolute inset-0 z-0">
                 <Image
-                    src={backgroundUrl}
-                    alt="Programs Background"
+                    src={bgImage}
+                    alt="Resource Background"
                     fill
-                    className="object-cover"
+                    className="object-cover scale-105"
                     priority
                     unoptimized
                 />
@@ -35,7 +33,7 @@ export default function DynamicHero({ heading, subtext, background, programName 
             </div>
 
             {/* Content */}
-            <div className="relative z-10 container mx-auto px-4 text-center text-white">
+            <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl text-center text-white">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -43,20 +41,20 @@ export default function DynamicHero({ heading, subtext, background, programName 
                     className="flex flex-col items-center"
                 >
                     {/* Breadcrumbs */}
-                    <div className="mb-10">
+                    <div className="mb-10 ">
                         <span className="text-xs font-bold tracking-[0.2em] uppercase opacity-90">
-                            HOME &gt; PROGRAMS {programName ? `> ${programName.toUpperCase()}` : ''}
+                            HOME &gt; {resourceTitle}
                         </span>
                     </div>
 
                     {/* Title */}
-                    <h1 className="text-4xl md:text-6xl font-bold mb-10 tracking-tight">
-                        {heading}
+                    <h1 className="text-4xl md:text-5xl font-bold mb-10 tracking-tight">
+                        {title}
                     </h1>
 
                     {/* Description */}
                     <p className="max-w-3xl mx-auto text-gray-200 text-base md:text-lg leading-relaxed font-light">
-                        {subtext}
+                        {description}
                     </p>
                 </motion.div>
             </div>

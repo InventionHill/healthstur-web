@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Playfair_Display } from "next/font/google";
 import "./globals.css";
+import { CompanyInfoProvider } from "@/context/CompanyInfoContext";
+import CountrySelectDialog from "@/app/components/CountrySelectDialog";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,8 +35,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} antialiased`}
         suppressHydrationWarning
       >
-
-        {children}
+        <CompanyInfoProvider>
+          {children}
+          <CountrySelectDialog />
+        </CompanyInfoProvider>
       </body>
     </html>
   );
