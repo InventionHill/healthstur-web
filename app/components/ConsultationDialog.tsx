@@ -37,20 +37,37 @@ export default function ConsultationDialog({ isOpen, onClose }: ConsultationDial
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        console.log('Form submitted:', formData);
-        // Add your submission logic here
-        onClose();
-        setFormData({
-            fullName: '',
-            email: '',
-            contactNo: '',
-            subject: '',
-            message: ''
-        });
-    };
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'}/consultations`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+            if (!response.ok) throw new Error('Failed to submit');
+
+            console.log('Form submitted successfully:', formData);
+            // Optionally add toast notification here
+
+            setFormData({
+                fullName: '',
+                email: '',
+                contactNo: '',
+                subject: '',
+                message: ''
+            });
+            onClose();
+        } catch (error) {
+            console.error('Error submitting form:', error);
+            // Optionally add error toast notification here
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
     return (
         <AnimatePresence>
             {isOpen && (

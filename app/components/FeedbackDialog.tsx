@@ -39,19 +39,34 @@ export default function FeedbackDialog({ isOpen, onClose }: FeedbackDialogProps)
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log('Form submitted:', { ...formData, rating });
-        // Add your submission logic here
-        onClose();
-        setFormData({
-            orderId: '',
-            fullName: '',
-            email: '',
-            subject: '',
-            message: ''
-        });
-        setRating(0);
+        setIsSubmitting(true);
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'}/feedback`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...formData, rating })
+            });
+            if (!response.ok) throw new Error('Failed to submit feedback');
+
+            console.log('Feedback submitted successfully');
+            onClose();
+            setFormData({
+                orderId: '',
+                fullName: '',
+                email: '',
+                subject: '',
+                message: ''
+            });
+            setRating(0);
+        } catch (error) {
+            console.error('Error submitting feedback:', error);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (

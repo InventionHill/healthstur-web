@@ -44,11 +44,39 @@ export default function StartApplicationDialog({ isOpen, onClose, selectedProgra
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log('Application submitted:', { ...formData, selectedProgram });
-        onClose();
-        // Reset form?
+        setIsSubmitting(true);
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'}/applications`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...formData, selectedProgram })
+            });
+            if (!response.ok) throw new Error('Failed to submit application');
+
+            console.log('Application submitted successfully');
+            onClose();
+            setFormData({
+                fullName: '',
+                mobileNumber: '',
+                email: '',
+                height: '',
+                weight: '',
+                age: '',
+                medicalCondition: '',
+                allergies: '',
+                goal: '',
+                duration: '',
+                routine: ''
+            });
+        } catch (error) {
+            console.error('Error submitting application:', error);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -91,7 +119,7 @@ export default function StartApplicationDialog({ isOpen, onClose, selectedProgra
                                             placeholder="Full name"
                                             value={formData.fullName}
                                             onChange={handleChange}
-                                            className="w-full px-4 py-3 rounded-2xl border border-gray-400 focus:border-[#023051] focus:ring-1 focus:ring-[#023051] outline-none transition-all placeholder:text-gray-500"
+                                            className="w-full px-4 py-3 rounded-2xl text-black border border-gray-400 focus:border-[#023051] focus:ring-1 focus:ring-[#023051] outline-none transition-all placeholder:text-gray-500"
                                             required
                                         />
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -101,7 +129,7 @@ export default function StartApplicationDialog({ isOpen, onClose, selectedProgra
                                                 placeholder="Mobile number"
                                                 value={formData.mobileNumber}
                                                 onChange={handleChange}
-                                                className="w-full px-4 py-3 rounded-2xl border border-gray-400 focus:border-[#023051] focus:ring-1 focus:ring-[#023051] outline-none transition-all placeholder:text-gray-500"
+                                                className="w-full px-4 py-3 rounded-2xl text-black border border-gray-400 focus:border-[#023051] focus:ring-1 focus:ring-[#023051] outline-none transition-all placeholder:text-gray-500"
                                                 required
                                             />
                                             <input
@@ -110,7 +138,7 @@ export default function StartApplicationDialog({ isOpen, onClose, selectedProgra
                                                 placeholder="Email address ( Optional )"
                                                 value={formData.email}
                                                 onChange={handleChange}
-                                                className="w-full px-4 py-3 rounded-2xl border border-gray-400 focus:border-[#023051] focus:ring-1 focus:ring-[#023051] outline-none transition-all placeholder:text-gray-500"
+                                                className="w-full px-4 py-3 rounded-2xl text-black border border-gray-400 focus:border-[#023051] focus:ring-1 focus:ring-[#023051] outline-none transition-all placeholder:text-gray-500"
                                             />
                                         </div>
                                     </div>
@@ -126,7 +154,7 @@ export default function StartApplicationDialog({ isOpen, onClose, selectedProgra
                                             placeholder="Height ( CM )"
                                             value={formData.height}
                                             onChange={handleChange}
-                                            className="w-full px-4 py-3 rounded-2xl border border-gray-400 focus:border-[#023051] focus:ring-1 focus:ring-[#023051] outline-none transition-all placeholder:text-gray-500"
+                                            className="w-full px-4 py-3 rounded-2xl text-black border border-gray-400 focus:border-[#023051] focus:ring-1 focus:ring-[#023051] outline-none transition-all placeholder:text-gray-500"
                                             required
                                         />
                                         <input
@@ -135,7 +163,7 @@ export default function StartApplicationDialog({ isOpen, onClose, selectedProgra
                                             placeholder="Weight ( KG )"
                                             value={formData.weight}
                                             onChange={handleChange}
-                                            className="w-full px-4 py-3 rounded-2xl border border-gray-400 focus:border-[#023051] focus:ring-1 focus:ring-[#023051] outline-none transition-all placeholder:text-gray-500"
+                                            className="w-full px-4 py-3 rounded-2xl text-black border border-gray-400 focus:border-[#023051] focus:ring-1 focus:ring-[#023051] outline-none transition-all placeholder:text-gray-500"
                                             required
                                         />
                                         <input
@@ -144,7 +172,7 @@ export default function StartApplicationDialog({ isOpen, onClose, selectedProgra
                                             placeholder="Age"
                                             value={formData.age}
                                             onChange={handleChange}
-                                            className="w-full px-4 py-3 rounded-2xl border border-gray-400 focus:border-[#023051] focus:ring-1 focus:ring-[#023051] outline-none transition-all placeholder:text-gray-500"
+                                            className="w-full px-4 py-3 rounded-2xl text-black border border-gray-400 focus:border-[#023051] focus:ring-1 focus:ring-[#023051] outline-none transition-all placeholder:text-gray-500"
                                             required
                                         />
                                     </div>
@@ -154,7 +182,7 @@ export default function StartApplicationDialog({ isOpen, onClose, selectedProgra
                                         placeholder="Medical Condition ( If any )"
                                         value={formData.medicalCondition}
                                         onChange={handleChange}
-                                        className="w-full px-4 py-3 rounded-2xl border border-gray-400 focus:border-[#023051] focus:ring-1 focus:ring-[#023051] outline-none transition-all placeholder:text-gray-500"
+                                        className="w-full px-4 py-3 rounded-2xl text-black border border-gray-400 focus:border-[#023051] focus:ring-1 focus:ring-[#023051] outline-none transition-all placeholder:text-gray-500"
                                     />
                                     <input
                                         type="text"
@@ -162,7 +190,7 @@ export default function StartApplicationDialog({ isOpen, onClose, selectedProgra
                                         placeholder="Allergies ( If any )"
                                         value={formData.allergies}
                                         onChange={handleChange}
-                                        className="w-full px-4 py-3 rounded-2xl border border-gray-400 focus:border-[#023051] focus:ring-1 focus:ring-[#023051] outline-none transition-all placeholder:text-gray-500"
+                                        className="w-full px-4 py-3 rounded-2xl text-black border border-gray-400 focus:border-[#023051] focus:ring-1 focus:ring-[#023051] outline-none transition-all placeholder:text-gray-500"
                                     />
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <input
@@ -171,7 +199,7 @@ export default function StartApplicationDialog({ isOpen, onClose, selectedProgra
                                             placeholder="Goal"
                                             value={formData.goal}
                                             onChange={handleChange}
-                                            className="w-full px-4 py-3 rounded-2xl border border-gray-400 focus:border-[#023051] focus:ring-1 focus:ring-[#023051] outline-none transition-all placeholder:text-gray-500"
+                                            className="w-full px-4 py-3 rounded-2xl text-black border border-gray-400 focus:border-[#023051] focus:ring-1 focus:ring-[#023051] outline-none transition-all placeholder:text-gray-500"
                                             required
                                         />
                                         <input
@@ -180,7 +208,7 @@ export default function StartApplicationDialog({ isOpen, onClose, selectedProgra
                                             placeholder="Duration ( Month )"
                                             value={formData.duration}
                                             onChange={handleChange}
-                                            className="w-full px-4 py-3 rounded-2xl border border-gray-400 focus:border-[#023051] focus:ring-1 focus:ring-[#023051] outline-none transition-all placeholder:text-gray-500"
+                                            className="w-full px-4 py-3 rounded-2xl text-black border border-gray-400 focus:border-[#023051] focus:ring-1 focus:ring-[#023051] outline-none transition-all placeholder:text-gray-500"
                                             required
                                         />
                                     </div>
@@ -205,7 +233,7 @@ export default function StartApplicationDialog({ isOpen, onClose, selectedProgra
                                         value={formData.routine}
                                         onChange={handleChange}
                                         rows={4}
-                                        className="w-full px-4 py-3 rounded-2xl border border-gray-400 focus:border-[#023051] focus:ring-1 focus:ring-[#023051] outline-none transition-all placeholder:text-gray-500"
+                                        className="w-full px-4 py-3 rounded-2xl text-black border border-gray-400 focus:border-[#023051] focus:ring-1 focus:ring-[#023051] outline-none transition-all placeholder:text-gray-500"
                                         required
                                     />
                                 </div>

@@ -3,63 +3,28 @@
 import Image from 'next/image';
 import { Target, ArrowUpRight, Heart, User, Sun, Activity, Leaf, Flower } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { DynamicIcon } from './DynamicIcon';
 
-const cards = [
-    {
-        title: "Yoga & Meditation",
-        description: "Mind-body practices enhance physical flexibility and mental balance while reducing stress.",
-        image: "/Yoga.svg",
-        icon: "/Yoga_Icon.svg",
-        iconWidth: 30,
-        iconHeight: 30,
-        linkText: "About yoga & Meditation"
-    },
-    {
-        title: "Health - Specific Programs",
-        description: "Scientific approach to calorie deficit and active metabolic conditioning.",
-        image: "/Health.svg",
-        icon: "/Health_Icon.svg",
-        iconWidth: 30,
-        iconHeight: 30,
-        linkText: "About Health & Programs"
-    },
-    {
-        title: "Woman’s Health",
-        description: "Women experience unique hormonal and physiological changes that require specialized care and attention.",
-        image: "/Woman.svg",
-        icon: "/Woman_Icon.svg",
-        iconWidth: 30,
-        iconHeight: 30,
-        linkText: "About Woman’s Health"
-    },
-    {
-        title: "Lifestyle Habits",
-        description: "Daily habits shape long-term health outcomes. Small, consistent changes lead to lasting transformation.",
-        image: "/LifeStyle.svg",
-        icon: "/LifeStyle_Icon.svg",
-        iconWidth: 28,
-        iconHeight: 28,
-        linkText: "About Lifestyle Habits"
-    },
-    {
-        title: "Pilates",
-        description: "Pilates strengthens core muscles, improves posture, and enhances overall body alignment.",
-        image: "/Pilate.svg",
-        icon: "/Pilates_Icon.svg",
-        iconWidth: 28,
-        iconHeight: 28,
-        linkText: "About Pilates"
-    },
-    {
-        title: "Ayurveda",
-        description: "Ayurveda promotes balance between body, mind, and environment through natural healing principles.",
-        image: "/Ayurveda.svg",
-        icon: "/Ayurveda_Icon.svg",
-        iconWidth: 28,
-        iconHeight: 28,
-        linkText: "About Ayurveda"
-    }
-];
+import { useState, useEffect } from 'react';
+
+export interface CuratedTrack {
+    id: string;
+    isActive?: boolean;
+    isCurated?: boolean;
+    href: string;
+
+    // Curated fields mapped from Program
+    curatedTitle?: string;
+    curatedDescription?: string;
+    curatedImage?: string;
+    curatedIcon?: string;
+    curatedIconWidth?: number;
+    curatedIconHeight?: number;
+    curatedLinkText?: string;
+}
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+const ASSET_URL = API_URL.replace(/\/api$/, '');
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -84,6 +49,26 @@ const cardVariants = {
 };
 
 export default function CuratedTracks() {
+    const [cards, setCards] = useState<CuratedTrack[]>([]);
+
+    useEffect(() => {
+        const fetchTracks = async () => {
+            try {
+                const res = await fetch(`${API_URL}/programs`);
+                const data: CuratedTrack[] = await res.json();
+
+                // Filter to only active programs that are marked as curated
+                const curatedPrograms = data.filter(p => p.isActive !== false && p.isCurated === true);
+                setCards(curatedPrograms);
+            } catch (error) {
+                console.error('Error fetching curated tracks:', error);
+            }
+        };
+        fetchTracks();
+    }, []);
+
+    if (cards.length === 0) return null;
+
     return (
         <section className="pb-16 md:pb-24 pt-14 md:pt-20 bg-white">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
@@ -112,13 +97,15 @@ export default function CuratedTracks() {
                             layout
                             variants={cardVariants}
                             key={index}
+                            onClick={() => window.location.href = card.href || '#'}
                             className={`group relative h-[400px] md:h-[450px] rounded-[32px] overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-500`}
                         >
                             {/* Background Image */}
                             <Image
-                                src={card.image}
-                                alt={card.title}
+                                src={card.curatedImage?.startsWith('http') ? card.curatedImage : `${ASSET_URL}${card.curatedImage || ''}`}
+                                alt={card.curatedTitle || 'Curated Track'}
                                 fill
+                                unoptimized
                                 className="object-cover transition-transform duration-700 group-hover:scale-104"
                             />
 
@@ -129,13 +116,9 @@ export default function CuratedTracks() {
                             <div className="absolute inset-0 p-6 flex flex-col justify-between opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-4 group-hover:translate-y-0">
                                 {/* Top Icon */}
                                 <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-[#023051] shadow-md flex-shrink-0 transform group-hover:translate-y-0 transition-transform duration-500 delay-75">
-                                    <Image
-                                        src={card.icon}
-                                        alt={card.title}
-                                        width={card.iconWidth || 30}
-                                        height={card.iconHeight || 30}
-                                        className="object-contain"
-                                        style={{ width: (card.iconWidth || 30) + 'px', height: (card.iconHeight || 30) + 'px' }}
+                                    <DynamicIcon
+                                        name={card.curatedIcon || 'Activity'}
+                                        style={{ width: (card.curatedIconWidth || 30) + 'px', height: (card.curatedIconHeight || 30) + 'px' }}
                                     />
                                 </div>
 
@@ -143,17 +126,17 @@ export default function CuratedTracks() {
                                 <div className="flex flex-col justify-end h-full">
                                     {/* Title */}
                                     <h3 className="text-2xl md:text-3xl font-bold text-white mb-3 leading-tight drop-shadow-md">
-                                        {card.title}
+                                        {card.curatedTitle}
                                     </h3>
 
                                     {/* Description */}
                                     <p className="text-sm md:text-base text-gray-200 leading-relaxed mb-6 border-b border-white/20 pb-6">
-                                        {card.description}
+                                        {card.curatedDescription}
                                     </p>
 
                                     {/* Footer Link */}
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm font-semibold text-white">{card.linkText}</span>
+                                        <span className="text-sm font-semibold text-white">{card.curatedLinkText || 'Start Transformation'}</span>
                                         <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-[#023051] transition-transform duration-300 hover:scale-110">
                                             <ArrowUpRight className="w-5 h-5" />
                                         </div>
