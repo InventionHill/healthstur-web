@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 
@@ -17,6 +18,21 @@ interface DynamicResourceStepsProps {
 }
 
 export default function DynamicResourceSteps({ steps }: DynamicResourceStepsProps) {
+    useEffect(() => {
+        if (typeof window !== 'undefined' && window.location.hash) {
+            const id = window.location.hash.substring(1);
+            if (id) {
+                // Gentle delay ensures DOM and framer-motion are ready before scrolling
+                setTimeout(() => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }, 600);
+            }
+        }
+    }, []);
+
     if (!steps || steps.length === 0) return null;
 
     return (
@@ -29,10 +45,14 @@ export default function DynamicResourceSteps({ steps }: DynamicResourceStepsProp
                             ? (step.image.startsWith('http') ? step.image : `${(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api').replace(/\/api$/, '')}${step.image}`)
                             : defaultImage;
 
+                        // Generate a URL-friendly slug ID identical to the backend search logic
+                        const stepSlugId = (step.title || `step-${index + 1}`).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+
                         return (
                             <div
                                 key={step.id}
-                                className={`flex flex-col ${index % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-start gap-10 lg:gap-16`}
+                                id={stepSlugId}
+                                className={`flex flex-col ${index % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-start gap-10 lg:gap-16 scroll-mt-32`}
                             >
                                 {/* Text Content */}
                                 <motion.div

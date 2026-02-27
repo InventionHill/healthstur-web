@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { Menu, X, Search, User, Languages, ChevronRight, ChevronDown, BookOpen } from 'lucide-react';
 
 import ConsultationDialog from './ConsultationDialog';
+import SearchDialog from './SearchDialog';
 import * as LucideIcons from 'lucide-react';
 import { DynamicIcon } from './DynamicIcon';
 
@@ -73,6 +74,7 @@ const Header = () => {
 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isConsultationOpen, setIsConsultationOpen] = useState(false);
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
 
     // Mobile menu state
     const [expandedMobileSection, setExpandedMobileSection] = useState<string | null>(null);
@@ -263,7 +265,7 @@ const Header = () => {
 
                 {/* Actions */}
                 <div className="flex items-center gap-2 sm:gap-2">
-                    <button className="text-[#023051] cursor-pointer hover:text-[#023051]/90 transition-colors" aria-label="Search">
+                    <button onClick={() => setIsSearchOpen(true)} className="text-[#023051] cursor-pointer hover:text-[#023051]/90 transition-colors" aria-label="Search">
                         <Search className="w-5 h-5 sm:w-6 sm:h-6" />
                     </button>
 
@@ -434,6 +436,7 @@ const Header = () => {
             )}
             {/* Consultation Dialog */}
             <ConsultationDialog isOpen={isConsultationOpen} onClose={() => setIsConsultationOpen(false)} />
+            <SearchDialog isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} programs={programsData} resources={resourcesData} />
         </header>
     );
 };
