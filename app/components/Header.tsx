@@ -120,7 +120,15 @@ const Header = () => {
                 {/* Desktop Navigation */}
                 <nav className="hidden md:flex items-center gap-8 lg:gap-10">
                     {navLinks.map((link) => {
-                        const isActive = pathname === link.href;
+                        let isActive = pathname === link.href;
+                        if (link.name === 'PROGRAMS') {
+                            isActive = pathname.startsWith('/programs') || programsData.some(p => p.href && p.href !== '/' && p.href !== '#' && pathname.startsWith(p.href.split('#')[0]));
+                        } else if (link.name === 'RESOURCES') {
+                            isActive = pathname.startsWith('/resources');
+                        } else if (link.href !== '/' && pathname.startsWith(link.href)) {
+                            isActive = true;
+                        }
+
                         return (
                             <div
                                 key={link.name}
@@ -231,15 +239,15 @@ const Header = () => {
                                 {link.name === 'RESOURCES' && (
                                     <div className="absolute top-8 left-0 pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 w-[240px]">
                                         <div className="bg-white shadow-xl border border-gray-100 overflow-hidden">
-                                            <div className="flex flex-col gap-1 py-2">
+                                            <div className="flex flex-col gap-1 ">
                                                 {resourcesData.map(resource => (
-                                                    <Link key={resource.id} href={`/resources/${resource.slug}`} className="flex items-center gap-3 p-3 mx-2 rounded-lg hover:bg-gray-50 transition-colors group/item relative overflow-hidden">
+                                                    <Link key={resource.id} href={`/resources/${resource.slug}`} className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group/item relative overflow-hidden">
                                                         <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-[#023051] opacity-0 group-hover/item:opacity-100 transition-opacity" />
                                                         <BookOpen className="w-6 h-6 text-gray-500 group-hover/item:text-[#023051] transition-colors" />
                                                         <span className="text-[14px] font-[500] text-gray-700 group-hover/item:text-[#023051] transition-colors">{resource.title}</span>
                                                     </Link>
                                                 ))}
-                                                <Link href="/resources/expert-articles" className="flex items-center gap-3 p-3 mx-2 rounded-lg hover:bg-gray-50 transition-colors group/item relative overflow-hidden">
+                                                <Link href="/resources/expert-articles" className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group/item relative overflow-hidden">
                                                     <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-[#023051] opacity-0 group-hover/item:opacity-100 transition-opacity" />
                                                     <User className="w-6 h-6 text-gray-500 group-hover/item:text-[#023051] transition-colors" />
                                                     <span className="text-[14px] font-[500] text-gray-700 group-hover/item:text-[#023051] transition-colors">Expert Articles</span>
@@ -257,10 +265,6 @@ const Header = () => {
                 <div className="flex items-center gap-2 sm:gap-2">
                     <button className="text-[#023051] cursor-pointer hover:text-[#023051]/90 transition-colors" aria-label="Search">
                         <Search className="w-5 h-5 sm:w-6 sm:h-6" />
-                    </button>
-
-                    <button className="p-2 text-[#023051] cursor-pointer hover:text-[#023051]/90 transition-colors" aria-label="Language">
-                        <Languages className="w-5 h-5 sm:w-6 sm:h-6" />
                     </button>
 
                     <button
@@ -287,13 +291,22 @@ const Header = () => {
                 <div className="md:hidden bg-white border-t border-gray-100 absolute w-full left-0 shadow-xl animate-in slide-in-from-top duration-300 max-h-[85vh] overflow-y-auto">
                     <nav className="flex flex-col py-6 px-4 gap-2">
                         {navLinks.map((link) => {
+                            let isActive = pathname === link.href;
+                            if (link.name === 'PROGRAMS') {
+                                isActive = pathname.startsWith('/programs') || programsData.some(p => p.href && p.href !== '/' && p.href !== '#' && pathname.startsWith(p.href.split('#')[0]));
+                            } else if (link.name === 'RESOURCES') {
+                                isActive = pathname.startsWith('/resources');
+                            } else if (link.href !== '/' && pathname.startsWith(link.href)) {
+                                isActive = true;
+                            }
+
                             // Handle PROGRAMS separately
                             if (link.name === 'PROGRAMS') {
                                 return (
                                     <div key={link.name}>
                                         <button
                                             onClick={() => toggleMobileSection('PROGRAMS')}
-                                            className="w-full flex items-center justify-between text-base font-bold text-gray-800 hover:text-[#023051] transition-colors px-4 py-3 rounded-lg hover:bg-gray-50"
+                                            className={`w-full flex items-center justify-between text-base font-bold transition-colors px-4 py-3 rounded-lg hover:bg-gray-50 ${isActive ? 'text-[#023051]' : 'text-gray-800 hover:text-[#023051]'}`}
                                         >
                                             {link.name}
                                             <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${expandedMobileSection === 'PROGRAMS' ? 'rotate-180' : ''}`} />
@@ -357,7 +370,7 @@ const Header = () => {
                                     <div key={link.name}>
                                         <button
                                             onClick={() => toggleMobileSection('RESOURCES')}
-                                            className="w-full flex items-center justify-between text-base font-bold text-gray-800 hover:text-[#023051] transition-colors px-4 py-3 rounded-lg hover:bg-gray-50"
+                                            className={`w-full flex items-center justify-between text-base font-bold transition-colors px-4 py-3 rounded-lg hover:bg-gray-50 ${isActive ? 'text-[#023051]' : 'text-gray-800 hover:text-[#023051]'}`}
                                         >
                                             {link.name}
                                             <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${expandedMobileSection === 'RESOURCES' ? 'rotate-180' : ''}`} />
@@ -397,7 +410,7 @@ const Header = () => {
                                     key={link.name}
                                     href={link.href}
                                     onClick={() => setIsMenuOpen(false)}
-                                    className="text-base font-bold text-gray-800 hover:text-[#023051] transition-colors px-4 py-3 rounded-lg hover:bg-gray-50 block"
+                                    className={`text-base font-bold transition-colors px-4 py-3 rounded-lg hover:bg-gray-50 block ${isActive ? 'text-[#023051]' : 'text-gray-800 hover:text-[#023051]'}`}
                                 >
                                     {link.name}
                                 </Link>
