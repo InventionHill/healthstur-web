@@ -65,6 +65,9 @@ export default function PricingSection() {
         if (userCountry === 'europe' && plan.priceEurope) {
             return <><span className="text-4xl md:text-5xl font-extrabold mr-2 transition-colors duration-300 text-[#023051] group-hover:text-white">€{plan.priceEurope}</span></>;
         }
+        if (userCountry === 'uk' && plan.priceUk) {
+            return <><span className="text-4xl md:text-5xl font-extrabold mr-2 transition-colors duration-300 text-[#023051] group-hover:text-white">£{plan.priceUk}</span></>;
+        }
 
         return <><span className="text-4xl md:text-5xl font-extrabold mr-2 transition-colors duration-300 text-[#023051] group-hover:text-white">${plan.price}</span></>;
     };

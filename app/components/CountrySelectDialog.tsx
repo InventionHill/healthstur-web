@@ -20,6 +20,11 @@ const COUNTRIES = [
         id: 'europe',
         name: 'Europe',
         flag: 'https://flagcdn.com/eu.svg',
+    },
+    {
+        id: 'uk',
+        name: 'UK',
+        flag: 'https://flagcdn.com/gb.svg',
     }
 ];
 
@@ -96,7 +101,7 @@ export default function CountrySelectDialog() {
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: 20 }}
                             onClick={(e) => e.stopPropagation()}
-                            className="bg-white rounded-[12px] w-full max-w-[500px] p-8 relative shadow-2xl"
+                            className="bg-white rounded-[12px] w-full max-w-[750px] p-6 md:p-8 relative shadow-2xl mx-auto"
                         >
                             {/* Header */}
                             <div className="text-center mb-10 mt-2 relative">
@@ -116,7 +121,7 @@ export default function CountrySelectDialog() {
                             </div>
 
                             {/* Country Options */}
-                            <div className="flex items-center justify-center gap-2 md:gap-4 mb-10">
+                            <div className="flex flex-wrap md:flex-nowrap items-center justify-center gap-3 md:gap-2 lg:gap-4 mb-6 md:mb-10 w-full">
                                 {COUNTRIES.map((country, index) => {
                                     const isSelected = selectedCountry === country.id;
 
@@ -124,9 +129,9 @@ export default function CountrySelectDialog() {
                                         <React.Fragment key={country.id}>
                                             <button
                                                 onClick={() => setSelectedCountry(country.id)}
-                                                className={`relative p-4 md:px-6 md:py-6 rounded-2xl flex flex-col items-center justify-center gap-4 transition-all duration-200 min-w-[100px] md:min-w-[120px]
+                                                className={`relative p-4 md:px-6 md:py-6 rounded-2xl flex flex-col items-center justify-center gap-3 md:gap-4 transition-all duration-200 w-[calc(50%-6px)] md:w-auto md:min-w-[120px]
                           ${isSelected
-                                                        ? 'border border-[#023051] bg-white text-[#023051]'
+                                                        ? 'border border-[#023051] bg-white text-[#023051] shadow-sm'
                                                         : 'border border-transparent bg-transparent text-black hover:bg-gray-50'
                                                     }
                         `}
@@ -139,7 +144,7 @@ export default function CountrySelectDialog() {
                                                 )}
 
                                                 {/* Flag SVG Circle */}
-                                                <div className="w-20 h-20 rounded-full overflow-hidden shadow-md flex-shrink-0 relative bg-gray-100 flex items-center justify-center transition-transform duration-300">
+                                                <div className="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden shadow-md flex-shrink-0 relative bg-gray-100 flex items-center justify-center transition-transform duration-300">
                                                     <Image
                                                         src={country.flag}
                                                         alt={country.name}
@@ -150,14 +155,14 @@ export default function CountrySelectDialog() {
                                                 </div>
 
                                                 {/* Country Name */}
-                                                <span className={`font-bold text-base md:text-lg`}>
+                                                <span className={`font-bold text-sm md:text-lg`}>
                                                     {country.name}
                                                 </span>
                                             </button>
 
-                                            {/* Divider between USA and Europe based on screenshot */}
+                                            {/* Divider between items on desktop */}
                                             {index !== COUNTRIES.length - 1 && (
-                                                <div className="w-[1px] h-16 bg-gray-300 shrink-0 mx-2" />
+                                                <div className="hidden md:block w-[1px] h-16 bg-gray-300 shrink-0 mx-0 lg:mx-2" />
                                             )}
                                         </React.Fragment>
                                     );

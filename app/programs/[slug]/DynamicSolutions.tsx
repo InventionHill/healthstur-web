@@ -11,9 +11,22 @@ interface Solution {
     description: string;
     approach: string;
     benefits: string;
+    focusOn?: string[];
     priceIndia?: string;
     priceUsa?: string;
     priceEurope?: string;
+    price4WeekIndia?: string;
+    price8WeekIndia?: string;
+    price12WeekIndia?: string;
+    price4WeekUsa?: string;
+    price8WeekUsa?: string;
+    price12WeekUsa?: string;
+    price4WeekEurope?: string;
+    price8WeekEurope?: string;
+    price12WeekEurope?: string;
+    price4WeekUk?: string;
+    price8WeekUk?: string;
+    price12WeekUk?: string;
     image: string;
 }
 
@@ -27,6 +40,9 @@ export default function DynamicSolutions({ heading, subtext, solutions }: Dynami
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [selectedProgram, setSelectedProgram] = useState('');
     const [userCountry, setUserCountry] = useState<string | null>(null);
+
+    const [isPricingOpen, setIsPricingOpen] = useState(false);
+    const [selectedPricingSolution, setSelectedPricingSolution] = useState<Solution | null>(null);
 
     useEffect(() => {
         // Hydrate initial country from local storage
@@ -46,26 +62,24 @@ export default function DynamicSolutions({ heading, subtext, solutions }: Dynami
         };
     }, []);
 
-    const handleStartNow = (programTitle: string) => {
-        setSelectedProgram(programTitle);
+    const handleStartNow = (program: Solution) => {
+        setSelectedPricingSolution(program);
+        setIsPricingOpen(true);
+    };
+
+    const handleBuyNow = (programTitle: string, duration: string) => {
+        setIsPricingOpen(false);
+        setSelectedProgram(`${programTitle} - ${duration}`);
         setIsDialogOpen(true);
     };
 
-    const getPriceDisplay = (program: Solution) => {
-        if (!userCountry) return 'Start Now';
-
-        if (userCountry === 'india' && program.priceIndia) {
-            return `Start Now / ₹${program.priceIndia} Per 4 Week`;
-        }
-        if (userCountry === 'usa' && program.priceUsa) {
-            return `Start Now / $${program.priceUsa} Per 4 Week`;
-        }
-        if (userCountry === 'europe' && program.priceEurope) {
-            return `Start Now / €${program.priceEurope} Per 4 Week`;
-        }
-
-        // Fallback default
-        return 'Start Now';
+    const getPrice = (solution: Solution, duration: '4Week' | '8Week' | '12Week') => {
+        if (!userCountry) return '---';
+        if (userCountry === 'india') return `₹${solution[`price${duration}India` as keyof Solution] || '---'}`;
+        if (userCountry === 'usa') return `$${solution[`price${duration}Usa` as keyof Solution] || '---'}`;
+        if (userCountry === 'europe') return `€${solution[`price${duration}Europe` as keyof Solution] || '---'}`;
+        if (userCountry === 'uk') return `£${solution[`price${duration}Uk` as keyof Solution] || '---'}`;
+        return '---';
     };
 
     const backendUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api').replace(/\/api$/, '');
@@ -144,10 +158,10 @@ export default function DynamicSolutions({ heading, subtext, solutions }: Dynami
 
                                     <div className="pt-2">
                                         <button
-                                            onClick={() => handleStartNow(program.title)}
+                                            onClick={() => handleStartNow(program)}
                                             className="bg-[#023051] cursor-pointer text-white px-6 py-2 rounded-full font-bold hover:bg-[#023051]/90 transition-all shadow-lg text-xs md:text-sm"
                                         >
-                                            {getPriceDisplay(program)}
+                                            Start Now
                                         </button>
                                     </div>
                                 </div>
@@ -156,6 +170,93 @@ export default function DynamicSolutions({ heading, subtext, solutions }: Dynami
                     })}
                 </div>
             </div>
+            {/* Pricing Modal */}
+            {isPricingOpen && selectedPricingSolution && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        className="bg-white rounded-[24px] w-full max-w-2xl relative overflow-hidden flex flex-col max-h-[90vh]"
+                    >
+                        <button
+                            onClick={() => setIsPricingOpen(false)}
+                            className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 transition"
+                        >
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M13 1L1 13M1 1L13 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                        </button>
+
+                        <div className="p-8 md:p-10 flex flex-col flex-1 overflow-y-auto">
+                            <h2 className="text-3xl font-bold text-center mb-8 text-[#0F172A]">
+                                {selectedPricingSolution.title}
+                            </h2>
+
+                            {selectedPricingSolution.focusOn && (
+                                <div className="mb-10">
+                                    <h3 className="text-lg font-bold mb-4 text-[#0F172A]">Focus On :</h3>
+                                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-8">
+                                        {selectedPricingSolution.focusOn.filter(b => b.trim()).map((b, i) => (
+                                            <li key={i} className="flex items-start text-[#0F172A] text-sm md:text-base font-medium">
+                                                <span className="mr-2 mt-1.5 w-1.5 h-1.5 bg-[#0F172A] rounded-full flex-shrink-0"></span>
+                                                {b.trim()}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+
+                            <div className="border-t border-gray-200 my-4"></div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6">
+                                {/* 4 Week */}
+                                <div className="flex flex-col items-center sm:border-r border-gray-200 last:border-0 pb-6 sm:pb-0 border-b sm:border-b-0 last:border-b-0">
+                                    <h4 className="text-xl md:text-2xl font-bold text-[#0F172A] mb-2">4 Week</h4>
+                                    <p className="text-xl font-medium text-[#0F172A] mb-4">
+                                        {getPrice(selectedPricingSolution, '4Week')}
+                                    </p>
+                                    <button
+                                        onClick={() => handleBuyNow(selectedPricingSolution.title, '4 Week')}
+                                        className="bg-[#023051] text-white px-8 py-2.5 rounded-full font-bold text-sm hover:bg-[#023051]/90 transition-all cursor-pointer shadow-md"
+                                    >
+                                        Buy Now
+                                    </button>
+                                </div>
+
+                                {/* 8 Week */}
+                                <div className="flex flex-col items-center sm:border-r border-gray-200 last:border-0 pb-6 sm:pb-0 border-b sm:border-b-0 last:border-b-0">
+                                    <h4 className="text-xl md:text-2xl font-bold text-[#0F172A] mb-2">8 Week</h4>
+                                    <p className="text-xl font-medium text-[#0F172A] mb-4">
+                                        {getPrice(selectedPricingSolution, '8Week')}
+                                    </p>
+                                    <button
+                                        onClick={() => handleBuyNow(selectedPricingSolution.title, '8 Week')}
+                                        className="bg-[#023051] text-white px-8 py-2.5 rounded-full font-bold text-sm hover:bg-[#023051]/90 transition-all cursor-pointer shadow-md"
+                                    >
+                                        Buy Now
+                                    </button>
+                                </div>
+
+                                {/* 12 Week */}
+                                <div className="flex flex-col items-center pb-0 border-b-0">
+                                    <h4 className="text-xl md:text-2xl font-bold text-[#0F172A] mb-2">12 Week</h4>
+                                    <p className="text-xl font-medium text-[#0F172A] mb-4">
+                                        {getPrice(selectedPricingSolution, '12Week')}
+                                    </p>
+                                    <button
+                                        onClick={() => handleBuyNow(selectedPricingSolution.title, '12 Week')}
+                                        className="bg-[#023051] text-white px-8 py-2.5 rounded-full font-bold text-sm hover:bg-[#023051]/90 transition-all cursor-pointer shadow-md"
+                                    >
+                                        Buy Now
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </motion.div>
+                </div>
+            )}
+
             <StartApplicationDialog
                 isOpen={isDialogOpen}
                 onClose={() => setIsDialogOpen(false)}
