@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check } from 'lucide-react';
+import { Check, X } from 'lucide-react';
 
 const COUNTRIES = [
     {
@@ -31,7 +31,23 @@ export default function CountrySelectDialog() {
         const savedCountry = localStorage.getItem('selectedCountry');
         if (!savedCountry) {
             setIsOpen(true);
+        } else {
+            setSelectedCountry(savedCountry);
         }
+
+        const handleOpen = () => {
+            const currentSelected = localStorage.getItem('selectedCountry');
+            if (currentSelected) {
+                setSelectedCountry(currentSelected);
+            }
+            setIsOpen(true);
+        };
+
+        window.addEventListener('openCountrySelect', handleOpen);
+
+        return () => {
+            window.removeEventListener('openCountrySelect', handleOpen);
+        };
     }, []);
 
     // Handle body scroll locking
@@ -83,6 +99,15 @@ export default function CountrySelectDialog() {
                         >
                             {/* Header */}
                             <div className="text-center mb-10 mt-2 relative">
+                                {localStorage.getItem('selectedCountry') && (
+                                    <button
+                                        onClick={() => setIsOpen(false)}
+                                        className="absolute right-0 top-0 text-gray-400 hover:text-gray-600 transition-colors p-1"
+                                        aria-label="Close dialog"
+                                    >
+                                        <X className="w-5 h-5" />
+                                    </button>
+                                )}
                                 <h2 className="text-xl md:text-2xl font-bold text-[#023051] inline-block relative">
                                     Select Your Country
                                     <div className="absolute -bottom-1 left-0 right-0 h-[2px] bg-[#005bb5]"></div>
