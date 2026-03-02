@@ -12,21 +12,7 @@ interface Solution {
     approach: string;
     benefits: string;
     focusOn?: string[];
-    priceIndia?: string;
-    priceUsa?: string;
-    priceEurope?: string;
-    price4WeekIndia?: string;
-    price8WeekIndia?: string;
-    price12WeekIndia?: string;
-    price4WeekUsa?: string;
-    price8WeekUsa?: string;
-    price12WeekUsa?: string;
-    price4WeekEurope?: string;
-    price8WeekEurope?: string;
-    price12WeekEurope?: string;
-    price4WeekUk?: string;
-    price8WeekUk?: string;
-    price12WeekUk?: string;
+    prices?: Record<string, { price4Week: string; price8Week: string; price12Week: string }>;
     image: string;
 }
 
@@ -44,12 +30,28 @@ export default function DynamicSolutions({ heading, subtext, solutions }: Dynami
     const [isPricingOpen, setIsPricingOpen] = useState(false);
     const [selectedPricingSolution, setSelectedPricingSolution] = useState<Solution | null>(null);
 
+    const [countries, setCountries] = useState<any[]>([]);
+
     useEffect(() => {
         // Hydrate initial country from local storage
         const savedCountry = localStorage.getItem('selectedCountry');
         if (savedCountry) {
             setUserCountry(savedCountry);
         }
+
+        const fetchCountries = async () => {
+            try {
+                const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+                const response = await fetch(`${apiBaseUrl}/countries/active`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setCountries(data);
+                }
+            } catch (error) {
+                console.error('Failed to fetch countries:', error);
+            }
+        };
+        fetchCountries();
 
         // Listen for country changes
         const handleCountryChange = () => {
@@ -75,11 +77,17 @@ export default function DynamicSolutions({ heading, subtext, solutions }: Dynami
 
     const getPrice = (solution: Solution, duration: '4Week' | '8Week' | '12Week') => {
         if (!userCountry) return '---';
-        if (userCountry === 'india') return `₹${solution[`price${duration}India` as keyof Solution] || '---'}`;
-        if (userCountry === 'usa') return `$${solution[`price${duration}Usa` as keyof Solution] || '---'}`;
-        if (userCountry === 'europe') return `€${solution[`price${duration}Europe` as keyof Solution] || '---'}`;
-        if (userCountry === 'uk') return `£${solution[`price${duration}Uk` as keyof Solution] || '---'}`;
-        return '---';
+        const country = countries.find(c => c.id === userCountry);
+        const countryPrices = solution.prices?.[userCountry];
+
+        if (!country || !countryPrices) return '---';
+
+        const rawPrice = countryPrices[`price${duration}` as keyof typeof countryPrices] || '';
+        if (!rawPrice) return '---';
+
+        // Ensure the currency symbol isn't duplicated (in case admin typed it in the input)
+        const cleanPrice = rawPrice.replace(/^[^\d]+/, '').trim();
+        return `${country.currencySymbol}${cleanPrice}`;
     };
 
     const backendUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api').replace(/\/api$/, '');

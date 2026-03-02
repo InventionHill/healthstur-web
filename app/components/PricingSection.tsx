@@ -10,6 +10,7 @@ export default function PricingSection() {
     const [activeDuration, setActiveDuration] = useState<string>('');
     const [loading, setLoading] = useState(true);
     const [userCountry, setUserCountry] = useState<string | null>(null);
+    const [countries, setCountries] = useState<any[]>([]);
 
     useEffect(() => {
         // Init country from local storage
@@ -25,25 +26,34 @@ export default function PricingSection() {
 
         window.addEventListener('countryChange', handleCountryChange);
 
-        const fetchPricing = async () => {
+        const fetchData = async () => {
             try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'}/pricing/public`);
-                if (res.ok) {
-                    const data = await res.json();
-                    // Filter out durations that have no plans
+                const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+                const [pricingRes, countriesRes] = await Promise.all([
+                    fetch(`${apiBase}/pricing/public`),
+                    fetch(`${apiBase}/countries/active`)
+                ]);
+
+                if (pricingRes.ok) {
+                    const data = await pricingRes.json();
                     const filteredData = data.filter((d: any) => d.plans && d.plans.length > 0);
                     setDurations(filteredData);
                     if (filteredData.length > 0) {
                         setActiveDuration(filteredData[0].id);
                     }
                 }
+
+                if (countriesRes.ok) {
+                    const countryData = await countriesRes.json();
+                    setCountries(countryData);
+                }
             } catch (error) {
-                console.error('Error fetching pricing:', error);
+                console.error('Error fetching data:', error);
             } finally {
                 setLoading(false);
             }
         };
-        fetchPricing();
+        fetchData();
 
         return () => {
             window.removeEventListener('countryChange', handleCountryChange);
@@ -54,22 +64,19 @@ export default function PricingSection() {
     const currentPlans = activeDurationObj?.plans || [];
 
     const getPriceDisplay = (plan: any) => {
-        if (!userCountry) return <><span className="text-4xl md:text-5xl font-extrabold mr-2 transition-colors duration-300 text-[#023051] group-hover:text-white">${plan.price}</span></>;
+        let displayPrice = plan.price || '---';
+        let symbol = '$';
 
-        if (userCountry === 'india' && plan.priceIndia) {
-            return <><span className="text-4xl md:text-5xl font-extrabold mr-2 transition-colors duration-300 text-[#023051] group-hover:text-white">₹{plan.priceIndia}</span></>;
-        }
-        if (userCountry === 'usa' && plan.priceUsa) {
-            return <><span className="text-4xl md:text-5xl font-extrabold mr-2 transition-colors duration-300 text-[#023051] group-hover:text-white">${plan.priceUsa}</span></>;
-        }
-        if (userCountry === 'europe' && plan.priceEurope) {
-            return <><span className="text-4xl md:text-5xl font-extrabold mr-2 transition-colors duration-300 text-[#023051] group-hover:text-white">€{plan.priceEurope}</span></>;
-        }
-        if (userCountry === 'uk' && plan.priceUk) {
-            return <><span className="text-4xl md:text-5xl font-extrabold mr-2 transition-colors duration-300 text-[#023051] group-hover:text-white">£{plan.priceUk}</span></>;
+        if (userCountry && plan.prices && plan.prices[userCountry]) {
+            displayPrice = plan.prices[userCountry];
+            const country = countries.find(c => c.id === userCountry);
+            if (country) symbol = country.currencySymbol;
         }
 
-        return <><span className="text-4xl md:text-5xl font-extrabold mr-2 transition-colors duration-300 text-[#023051] group-hover:text-white">${plan.price}</span></>;
+        // Clean out any currency symbol the admin might have typed (e.g. if they typed "₹1499")
+        const cleanPrice = displayPrice.toString().replace(/^[^\d]+/, '').trim();
+
+        return <><span className="text-4xl md:text-5xl font-extrabold mr-2 transition-colors duration-300 text-[#023051] group-hover:text-white">{symbol}{cleanPrice}</span></>;
     };
 
     if (loading) {
