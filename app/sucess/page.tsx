@@ -1,24 +1,11 @@
-"use client";
+import type { Metadata } from "next";
+import SuccessStoriesContent from "./SuccessStoriesContent";
 
-import Footer from "../components/Footer";
-import Header from "../components/Header";
-import { SmoothReveal } from "../components/SmoothReveal";
-import Hero from "./Hero";
-import SuccessStoriesSection from "./SuccessStoriesSection";
-import FounderQuoteSection from "./FounderQuoteSection";
-import StartYourJourneySection from "./StartYourJourneySection";
+export const metadata: Metadata = {
+    title: "Success Stories - Transformation Journeys | Healthstur Fitness",
+    description: "Be inspired by the real transformations of the Healthstur Fitness community. Read about their journey to better health and wellness.",
+};
 
-export default function HelpPage() {
-    return (
-        <main className="min-h-screen font-sans bg-white">
-            <Header />
-            <Hero />
-            <SuccessStoriesSection />
-            <FounderQuoteSection />
-            <StartYourJourneySection />
-            <SmoothReveal delay={0.1}>
-                <Footer />
-            </SmoothReveal>
-        </main>
-    );
+export default function SuccessStoriesPage() {
+    return <SuccessStoriesContent />;
 }

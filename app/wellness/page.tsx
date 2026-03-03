@@ -1,24 +1,11 @@
-"use client";
+import type { Metadata } from "next";
+import WellnessContent from "./WellnessContent";
 
-import Footer from "../components/Footer";
-import Header from "../components/Header";
-import { SmoothReveal } from "../components/SmoothReveal";
-import StartYourJourneySection from "../sucess/StartYourJourneySection";
-import Hero from "./Hero";
-import WellnessStepsSection from "./WellnessStepsSection";
-import LifestyleShiftSection from "./LifestyleShiftSection";
+export const metadata: Metadata = {
+    title: "Wellness Programs & Corporate Solutions | Healthstur Fitness",
+    description: "Explore our holistic wellness solutions designed for individuals and organizations. Start your lifestyle shift today.",
+};
 
 export default function WellnessPage() {
-    return (
-        <main className="min-h-screen font-sans bg-white">
-            <Header />
-            <Hero />
-            <WellnessStepsSection />
-            <LifestyleShiftSection />
-            <StartYourJourneySection />
-            <SmoothReveal delay={0.1}>
-                <Footer />
-            </SmoothReveal>
-        </main>
-    );
+    return <WellnessContent />;
 }

@@ -16,7 +16,7 @@ export default function DynamicHero({ heading, subtext, background, programName 
         ? `${backendUrl}${background}`
         : background || '/Program_bg.png';
 
-    console.log(backgroundUrl);
+
 
     return (
         <section className="relative w-full h-[70vh] min-h-full flex items-center justify-center overflow-hidden">
