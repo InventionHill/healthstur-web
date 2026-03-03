@@ -153,7 +153,7 @@ export default function StartApplicationDialog({ isOpen, onClose, selectedProgra
                 // Payment flow
                 const options = {
                     key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_QGdFrCgX1jtz7u',
-                    name: 'Healthstur Fitness',
+                    name: 'Healthstur',
                     description: selectedProgram || 'Program Purchase',
                     order_id: data.razorpayOrderId,
                     handler: async function (res: any) {
@@ -171,7 +171,7 @@ export default function StartApplicationDialog({ isOpen, onClose, selectedProgra
 
                             if (verifyRes.ok) {
                                 const verifyData = await verifyRes.json();
-                                console.log('Payment & Application completed successfully');
+
                                 setPaymentSuccessData(verifyData.application || { amount, currency, selectedProgram });
                                 setIsSubmitting(false);
                             } else {
@@ -207,7 +207,7 @@ export default function StartApplicationDialog({ isOpen, onClose, selectedProgra
                 rzp.open();
 
             } else {
-                console.log('Application submitted successfully');
+
                 handleClose();
             }
 
@@ -291,7 +291,7 @@ export default function StartApplicationDialog({ isOpen, onClose, selectedProgra
                             <>
                                 {/* Header */}
                                 <div className="px-8 pt-6 flex items-center justify-between bg-white z-10">
-                                    <h2 className="text-2xl md:text-3xl font-bold text-center w-full text-black">Start Your Application</h2>
+                                    <h2 className="text-2xl md:text-3xl font-bold text-center w-full text-black">Start Your Journey</h2>
                                     <button onClick={handleClose} className="absolute right-6 cursor-pointer top-6 p-2 rounded-full hover:bg-gray-100 transition-colors">
                                         <X className="w-6 h-6 text-gray-500" />
                                     </button>

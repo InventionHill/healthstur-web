@@ -113,7 +113,7 @@ export default function DynamicSolutions({ heading, subtext, solutions }: Dynami
     const backendUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api').replace(/\/api$/, '');
 
     return (
-        <section id="program-solutions" className="pt-12 md:pt-20 pb-4 md:pb-4 bg-white">
+        <section id="program-solutions" className="pt-12 md:pt-20 pb-4 md:pb-4 bg-white mb-12">
             <div className="container mx-auto px-4 md:px-8 max-w-7xl">
                 {/* Section Header */}
                 <div className="text-center mb-12 md:mb-20">

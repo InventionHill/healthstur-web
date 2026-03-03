@@ -50,7 +50,7 @@ export default function ConsultationDialog({ isOpen, onClose }: ConsultationDial
             });
             if (!response.ok) throw new Error('Failed to submit');
 
-            console.log('Form submitted successfully:', formData);
+
             // Optionally add toast notification here
 
             setFormData({

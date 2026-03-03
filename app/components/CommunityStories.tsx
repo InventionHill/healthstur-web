@@ -110,7 +110,7 @@ function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
         ? testimonial.image
         : `${(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api').replace(/\/api$/, '')}${testimonial.image}`;
 
-    console.log(imageUrl, 'imageUrl')
+
 
     return (
         <div className="w-[300px] md:w-[400px] flex-shrink-0 bg-[#00284D]/60 backdrop-blur-sm border border-white/5 p-6 md:p-8 rounded-3xl hover:bg-[#00284D] transition-colors duration-300 cursor-pointer">

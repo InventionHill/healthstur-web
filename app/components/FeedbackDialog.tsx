@@ -52,7 +52,7 @@ export default function FeedbackDialog({ isOpen, onClose }: FeedbackDialogProps)
             });
             if (!response.ok) throw new Error('Failed to submit feedback');
 
-            console.log('Feedback submitted successfully');
+
             onClose();
             setFormData({
                 orderId: '',
