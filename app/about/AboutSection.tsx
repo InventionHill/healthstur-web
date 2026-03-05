@@ -22,7 +22,7 @@ export default function AboutSection() {
                 {/* 2. Top Right: Image (Vegetables & Dumbbells) */}
                 <div className="relative w-full h-[300px] sm:h-[350px] lg:h-[300px] rounded-[32px] overflow-hidden order-2">
                     <Image
-                        src="/About_2.svg"
+                        src="/About_2.png"
                         alt="Healthy food and fitness equipment"
                         fill
                         className="object-cover"
@@ -32,7 +32,7 @@ export default function AboutSection() {
                 {/* 3. Bottom Left: Image (Flat lay) */}
                 <div className="relative w-[90%] h-[300px] sm:h-[350px] lg:h-[400px] rounded-[32px] overflow-hidden order-3 lg:order-3">
                     <Image
-                        src="/About_1.svg"
+                        src="/About_1.png"
                         alt="Fitness accessories and healthy snacks"
                         fill
                         className="object-cover"
