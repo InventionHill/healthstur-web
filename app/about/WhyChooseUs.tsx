@@ -29,13 +29,13 @@ const features = [
 ];
 
 const sliderImages = [
-    "/About_img2.svg",
-    "/About_img3.svg",
-    "/About_img4.svg",
-    "/About_img5.svg",
-    "/About_img6.svg",
-    "/About_img7.svg",
-    "/About_img8.svg",
+    "/About_img2.png",
+    "/About_img3.png",
+    "/About_img4.png",
+    "/About_img5.png",
+    "/About_img6.png",
+    "/About_img7.png",
+    "/About_img8.png",
 ];
 
 export default function WhyChooseUs() {
@@ -87,7 +87,7 @@ export default function WhyChooseUs() {
                         <div className="flex gap-8 w-full h-[150px] lg:h-auto lg:flex-1">
                             <div className="flex-1 h-full relative rounded-[20px] overflow-hidden">
                                 <Image
-                                    src="/About_mini1.svg"
+                                    src="/About_mini1.png"
                                     alt="Workout"
                                     fill
                                     className="object-cover"
@@ -95,7 +95,7 @@ export default function WhyChooseUs() {
                             </div>
                             <div className="flex-1 h-full relative rounded-[20px] overflow-hidden">
                                 <Image
-                                    src="/About_mini2.svg"
+                                    src="/About_mini2.png"
                                     alt="Healthy Ingredients"
                                     fill
                                     className="object-cover"
