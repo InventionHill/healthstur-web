@@ -110,10 +110,10 @@ export default function CuratedTracks() {
                             />
 
                             {/* Gradient Overlay */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-[#023051] via-[#023051]/60 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-90" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#023051] via-[#023051]/60 to-transparent opacity-90 md:opacity-0 transition-opacity duration-300 md:group-hover:opacity-90" />
 
                             {/* Content */}
-                            <div className="absolute inset-0 p-6 flex flex-col justify-between opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-4 group-hover:translate-y-0">
+                            <div className="absolute inset-0 p-6 flex flex-col justify-between opacity-100 md:opacity-0 transition-all duration-300 translate-y-0 md:translate-y-4 md:group-hover:opacity-100 md:group-hover:translate-y-0">
                                 {/* Top Icon */}
                                 <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-[#023051] shadow-md flex-shrink-0 transform group-hover:translate-y-0 transition-transform duration-500 delay-75">
                                     <DynamicIcon
